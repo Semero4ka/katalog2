@@ -1,0 +1,303 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Каталог оптовых цен</title>
+<meta name="description" content="Офлайн-каталог товаров: поиск и фильтры">
+<meta name="theme-color" content="#0f4c81">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" type="image/png" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-192.png">
+<style>
+:root{
+  --bg:#f4f6f8; --card:#ffffff; --ink:#1c2430; --muted:#6b7684;
+  --line:#e4e9ef; --accent:#0f4c81; --accent-2:#0d3f6b; --chip:#e8eef5;
+  --shadow:0 1px 2px rgba(16,35,55,.06),0 4px 14px rgba(16,35,55,.05);
+}
+@media (prefers-color-scheme: dark){
+  :root{ --bg:#10151b; --card:#1a2129; --ink:#e8edf2; --muted:#93a0ad;
+    --line:#28323d; --chip:#232f3b; --shadow:0 1px 2px rgba(0,0,0,.4); }
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{
+  background:var(--bg); color:var(--ink);
+  font:15px/1.45 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;
+  -webkit-tap-highlight-color:transparent;
+}
+/* ---------- header ---------- */
+header{
+  position:sticky; top:0; z-index:10;
+  background:linear-gradient(180deg,var(--accent),var(--accent-2));
+  color:#fff; padding:10px 14px 10px;
+  box-shadow:0 2px 10px rgba(10,40,70,.25);
+}
+.brand{display:flex; align-items:center; gap:9px; margin-bottom:9px}
+.brand img{width:26px;height:26px;border-radius:7px}
+.brand h1{font-size:17px; margin:0; font-weight:650; letter-spacing:.2px}
+.brand .sub{font-size:11.5px; opacity:.75; margin-top:1px}
+.searchrow{display:flex; gap:8px}
+.searchbox{
+  flex:1; display:flex; align-items:center; gap:8px;
+  background:#fff; border-radius:12px; padding:0 12px; height:44px;
+  box-shadow:0 2px 8px rgba(10,40,70,.18);
+}
+.searchbox svg{flex:none; opacity:.45}
+.searchbox input{
+  flex:1; border:0; outline:0; font-size:16px; background:transparent;
+  color:var(--ink); min-width:0;
+}
+.searchbox input::placeholder{color:#9aa7b4}
+.clearbtn{border:0; background:none; font-size:18px; color:#9aa7b4; cursor:pointer; padding:4px; display:none}
+.searchbox.has .clearbtn{display:block}
+.sortbox{position:relative; flex:none}
+.sortbox select{
+  height:44px; border:0; border-radius:12px; background:#fff; color:var(--ink);
+  font-size:13.5px; padding:0 8px; outline:0; box-shadow:0 2px 8px rgba(10,40,70,.18);
+  max-width:46vw; -webkit-appearance:none; appearance:none; padding-right:20px;
+}
+.sortbox::after{content:"▾"; position:absolute; right:7px; top:13px; color:#9aa7b4; pointer-events:none; font-size:12px}
+/* ---------- chips ---------- */
+.chips{
+  display:flex; gap:7px; overflow-x:auto; padding:9px 12px 11px;
+  scrollbar-width:none; -webkit-overflow-scrolling:touch; background:var(--bg);
+  position:sticky; top:0; z-index:9;
+}
+.chips::-webkit-scrollbar{display:none}
+.chip{
+  flex:none; border:1px solid var(--line); background:var(--card); color:var(--ink);
+  border-radius:20px; padding:7px 13px; font-size:13px; cursor:pointer; user-select:none;
+  display:flex; align-items:center; gap:6px; white-space:nowrap;
+}
+.chip .cnt{font-size:11px; color:var(--muted)}
+.chip.active{background:var(--accent); border-color:var(--accent); color:#fff}
+.chip.active .cnt{color:rgba(255,255,255,.75)}
+/* ---------- meta bar ---------- */
+.meta{
+  display:flex; justify-content:space-between; align-items:center;
+  padding:2px 14px 8px; font-size:12.5px; color:var(--muted);
+}
+/* ---------- list ---------- */
+main{padding:0 12px 40px}
+.group-h{
+  margin:18px 2px 8px; font-size:12px; font-weight:700; letter-spacing:.6px;
+  text-transform:uppercase; color:var(--muted); display:flex; gap:8px; align-items:center;
+}
+.group-h::after{content:""; flex:1; height:1px; background:var(--line)}
+.card{
+  background:var(--card); border:1px solid var(--line); border-radius:12px;
+  padding:11px 14px; margin-bottom:7px; box-shadow:var(--shadow);
+  display:flex; align-items:center; gap:12px;
+}
+.card .txt{flex:1; min-width:0}
+.card .name{font-size:14.5px; word-break:break-word}
+.card .cat{font-size:11.5px; color:var(--muted); margin-top:3px;
+  overflow:hidden; text-overflow:ellipsis; white-space:nowrap}
+.card .price{flex:none; font-weight:700; font-variant-numeric:tabular-nums; font-size:15px}
+.card .price small{font-weight:400; color:var(--muted); font-size:11px}
+mark{background:#ffe9a8; color:inherit; border-radius:3px; padding:0 1px}
+@media (prefers-color-scheme: dark){ mark{background:#7a5c14} }
+.empty{ text-align:center; color:var(--muted); padding:60px 20px; }
+.empty .big{font-size:44px; margin-bottom:10px}
+#more{ text-align:center; color:var(--muted); font-size:13px; padding:14px; }
+/* ---------- footer ---------- */
+footer{padding:6px 16px 30px; color:var(--muted); font-size:11.5px; line-height:1.5}
+/* ---------- install ---------- */
+.install{
+  display:none; margin:0 12px 12px; padding:11px 14px; border-radius:12px;
+  background:#eaf2fb; color:var(--accent); font-size:13.5px; cursor:pointer;
+  border:1px dashed #9dbde0; text-align:center;
+}
+@media (prefers-color-scheme: dark){ .install{background:#1c2b3a; border-color:#3a5b7d; color:#9cc4ea} }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="brand">
+    <img src="icon-192.png" alt="">
+    <div>
+      <h1>Каталог оптовых цен</h1>
+      <div class="sub">цены без НДС · с доставкой</div>
+    </div>
+  </div>
+  <div class="searchrow">
+    <div class="searchbox" id="sbox">
+      <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#6b7684" stroke-width="2.2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>
+      <input id="q" type="search" inputmode="search" placeholder="Поиск: товар, бренд, объём, цена…" autocomplete="off">
+      <button class="clearbtn" id="clear" aria-label="Очистить">×</button>
+    </div>
+    <div class="sortbox">
+      <select id="sort" aria-label="Сортировка">
+        <option value="def">По прайсу</option>
+        <option value="name">А→Я</option>
+        <option value="asc">Цена ↑</option>
+        <option value="desc">Цена ↓</option>
+      </select>
+    </div>
+  </div>
+</header>
+
+<nav class="chips" id="chips"></nav>
+<div class="install" id="install">📲 Установить приложение на устройство</div>
+<main>
+  <div class="meta"><span id="count"></span><button class="clearbtn" id="reset" style="display:none;font-size:13px;color:var(--accent);background:none;border:0;cursor:pointer">сбросить фильтры</button></div>
+  <div id="list"></div>
+  <div id="more" style="display:none">Прокрутите вниз, чтобы показать ещё…</div>
+  <div class="empty" id="empty" style="display:none">
+    <div class="big">🔍</div>
+    <div>Ничего не найдено.<br>Попробуйте изменить запрос или категорию.</div>
+  </div>
+</main>
+<footer id="foot"></footer>
+
+<script src="data.js"></script>
+<script>
+(function(){
+"use strict";
+const D = window.CATALOG;
+const norm = s => (s||'').toLowerCase().replace(/ё/g,'е').replace(/\s+/g,' ');
+const fmt = n => n.toLocaleString('ru-RU',{minimumFractionDigits:2, maximumFractionDigits:2});
+
+// плоский список
+const ALL = [];
+D.groups.forEach((g,gi)=>g.items.forEach(it=>ALL.push({n:it[0], p:it[1], g:g.name, gi})));
+
+// индекс поиска
+const IDX = ALL.map(o => ({o, s: norm(o.n), ps: String(o.p)}));
+
+const $q=document.getElementById('q'), $list=document.getElementById('list'),
+      $chips=document.getElementById('chips'), $count=document.getElementById('count'),
+      $empty=document.getElementById('empty'), $more=document.getElementById('more'),
+      $sort=document.getElementById('sort'), $sbox=document.getElementById('sbox'),
+      $clear=document.getElementById('clear'), $reset=document.getElementById('reset'),
+      $foot=document.getElementById('foot'), $install=document.getElementById('install');
+
+let cat=-1, query='', sortBy='def';
+const PAGE=80; let shown=0, view=[];
+
+// чипсы категорий
+function buildChips(){
+  let html = '<button class="chip active" data-c="-1">Все <span class="cnt">'+ALL.length+'</span></button>';
+  D.groups.forEach((g,gi)=>{
+    html += '<button class="chip" data-c="'+gi+'">'+g.name+' <span class="cnt">'+g.items.length+'</span></button>';
+  });
+  $chips.innerHTML = html;
+}
+buildChips();
+$chips.addEventListener('click', e=>{
+  const b = e.target.closest('.chip'); if(!b) return;
+  cat = +b.dataset.c;
+  $chips.querySelectorAll('.chip').forEach(c=>c.classList.toggle('active', c===b));
+  $reset.style.display = (cat!==-1||query) ? 'inline' : 'none';
+  apply(true);
+});
+$reset.addEventListener('click', ()=>{
+  cat=-1; $q.value=''; query='';
+  $sbox.classList.remove('has');
+  $chips.querySelectorAll('.chip').forEach(c=>c.classList.toggle('active', c.dataset.c==='-1'));
+  $reset.style.display='none';
+  apply(true);
+});
+
+let t;
+$q.addEventListener('input', ()=>{
+  clearTimeout(t);
+  t = setTimeout(()=>{
+    query = norm($q.value.trim());
+    $sbox.classList.toggle('has', !!$q.value);
+    $reset.style.display = (cat!==-1||query) ? 'inline' : 'none';
+    apply(true);
+  }, 140);
+});
+$clear.addEventListener('click', ()=>{ $q.value=''; $q.dispatchEvent(new Event('input')); $q.focus(); });
+$sort.addEventListener('change', ()=>{ sortBy=$sort.value; apply(true); });
+
+function apply(scrollTop){
+  let arr;
+  if(!query && cat===-1){
+    arr = IDX.slice();
+  } else {
+    const toks = query ? query.split(' ') : null;
+    arr = IDX.filter(x=>{
+      if(cat!==-1 && x.o.gi!==cat) return false;
+      if(!toks) return true;
+      for(const tk of toks){
+        if(x.s.includes(tk) || (tk.replace(/[^\d.,]/g,'') && x.ps.includes(tk.replace(',','.')))) continue;
+        return false;
+      }
+      return true;
+    });
+  }
+  if(sortBy==='name') arr.sort((a,b)=>a.o.n.localeCompare(b.o.n,'ru'));
+  else if(sortBy==='asc') arr.sort((a,b)=>a.o.p-b.o.p || a.o.n.localeCompare(b.o.n,'ru'));
+  else if(sortBy==='desc') arr.sort((a,b)=>b.o.p-a.o.p || a.o.n.localeCompare(b.o.n,'ru'));
+  view = arr.map(x=>x.o);
+  $count.textContent = (query||cat!==-1 ? 'Найдено: '+view.length+' из '+ALL.length : 'Всего позиций: '+ALL.length);
+  $more.style.display = view.length>shown ? 'block' : 'none';
+  $empty.style.display = view.length ? 'none' : 'block';
+  $list.innerHTML='';
+  shown = 0; renderChunk();
+  if(scrollTop) window.scrollTo({top:0});
+}
+
+const esc = s => s.replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+function hl(text){
+  if(!query) return esc(text);
+  const toks = query.split(' ').filter(Boolean).sort((a,b)=>b.length-a.length);
+  let out = esc(text), re;
+  for(const tk of toks){
+    if(/^[\d.,]+$/.test(tk)) continue;
+    re = new RegExp('('+tk.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')+')','gi');
+    out = out.replace(re,'<mark>$1</mark>');
+  }
+  return out;
+}
+
+function card(o, showCat){
+  const p = fmt(o.p);
+  return '<div class="card"><div class="txt"><div class="name">'+hl(o.n)+'</div>'
+    + (showCat ? '<div class="cat">'+esc(o.g)+'</div>' : '')
+    + '</div><div class="price">'+p+' <small>₽</small></div></div>';
+}
+
+function renderChunk(){
+  const slice = view.slice(shown, shown+PAGE);
+  const frag = [];
+  let prevG = shown>0 ? view[shown-1].g : null;
+  for(const o of slice){
+    if(!query && sortBy==='def' && o.g!==prevG) frag.push('<div class="group-h">'+esc(o.g)+'</div>');
+    prevG = o.g;
+    frag.push(card(o, !(query||sortBy!=='def'||cat!==-1)));
+  }
+  $list.insertAdjacentHTML('beforeend', frag.join(''));
+  shown += slice.length;
+  $more.style.display = view.length>shown ? 'block' : 'none';
+}
+
+new IntersectionObserver(es=>{
+  if(es[0].isIntersecting && view.length>shown) renderChunk();
+},{rootMargin:'400px'}).observe($more);
+
+$foot.innerHTML = D.note+'. Прайс от '+D.updated+' · '+ALL.length+' позиций. Работает офлайн — установите приложение через меню браузера («Добавить на главный экран»).';
+
+// PWA install
+let deferredPrompt=null;
+window.addEventListener('beforeinstallprompt', e=>{
+  e.preventDefault(); deferredPrompt=e;
+  $install.style.display='block';
+});
+$install.addEventListener('click', ()=>{
+  if(deferredPrompt){ deferredPrompt.prompt(); deferredPrompt=null; $install.style.display='none'; }
+});
+
+if('serviceWorker' in navigator){
+  navigator.serviceWorker.register('./sw.js').catch(()=>{});
+}
+
+apply(true);
+})();
+</script>
+</body>
+</html>
